@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nengi.exe</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts: Retro Arcade + Modern Serif/Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Dancing+Script:wght@600;700&family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #1b261b;
+      background-image: 
+        linear-gradient(to bottom, rgba(35, 49, 34, 0) 0%, rgba(15, 23, 15, 1) 100%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%25ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      min-height: 100vh;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    .font-serif-quote {
+      font-family: 'Cinzel', serif;
+    }
+
+    .font-retro {
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    .font-handwriting {
+      font-family: 'Dancing Script', cursive;
+    }
+
+    /* Clear & Sharp Floating Butterflies Background Animation */
+    @keyframes floatButterfly {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+      }
+      50% {
+        transform: translateY(-22px) rotate(5deg) scale(1.06);
+      }
+    }
+
+    .butterfly-bg {
+      animation: floatButterfly 7s infinite ease-in-out;
+    }
+
+    .butterfly-bg-delay {
+      animation: floatButterfly 9s infinite ease-in-out 3s;
+    }
+
+    /* Candle Flame Animation */
+    @keyframes flicker {
+      0%, 100% {
+        transform: scale(1) rotate(-2deg);
+        opacity: 0.95;
+        box-shadow: 0 0 12px #fde047, 0 0 24px #f97316;
+      }
+      25% {
+        transform: scale(1.08) rotate(2deg);
+        opacity: 1;
+        box-shadow: 0 0 16px #fde047, 0 0 30px #f97316;
+      }
+      50% {
+        transform: scale(0.92) rotate(-1deg);
+        opacity: 0.85;
+        box-shadow: 0 0 8px #fde047, 0 0 18px #f97316;
+      }
+      75% {
+        transform: scale(1.04) rotate(1deg);
+        opacity: 0.98;
+        box-shadow: 0 0 14px #fde047, 0 0 28px #f97316;
+      }
+    }
+
+    .flame {
+      background: radial-gradient(ellipse at bottom, #fef08a 0%, #f97316 60%, transparent 100%);
+      border-radius: 50% 50% 35% 35%;
+      animation: flicker 0.6s infinite ease-in-out alternate;
+      transform-origin: center bottom;
+    }
+
+    /* Smoke Particle Effect when blown out */
+    @keyframes riseSmoke {
+      0% {
+        opacity: 0.8;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(2.5);
+      }
+    }
+
+    .smoke {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: rgba(226, 232, 240, 0.6);
+      border-radius: 50%;
+      animation: riseSmoke 2s forwards ease-out;
+    }
+
+    /* Clear Glassmorphism Window */
+    .retro-window {
+      background: rgba(22, 33, 22, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(134, 169, 126, 0.25);
+    }
+
+    /* Glowing Buttons */
+    .glow-button {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 14px 0 rgba(101, 138, 93, 0.4);
+    }
+    .glow-button:hover {
+      box-shadow: 0 6px 20px 0 rgba(134, 169, 126, 0.65);
+      transform: translateY(-2px);
+    }
+    .glow-button:active {
+      transform: translateY(1px);
+    }
+
+    /* Letter Styling */
+    .letter-paper {
+      background: #fdfbf7;
+      color: #1e293b;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 60px rgba(76, 99, 72, 0.08);
+      background-image: radial-gradient(#e2e8f0 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center p-4 md:p-8 select-none relative min-h-screen">
+
+  <!-- Clear, High-Visibility Ambient Butterfly SVGs in Background -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-90 flex items-center justify-between px-6 md:px-20">
+    <svg class="butterfly-bg w-64 h-64 md:w-[420px] md:h-[420px] text-emerald-100/80 drop-shadow-[0_0_20px_rgba(167,243,208,0.4)]" viewBox="0 0 100 100" fill="currentColor">
+      <path d="M50 45 C35 10, 5 20, 15 50 C22 70, 42 60, 50 52 C58 60, 78 70, 85 50 C95 20, 65 10, 50 45 Z M50 50 C40 70, 20 85, 30 95 C40 100, 48 78, 50 68 C52 78, 60 100, 70 95 C80 85, 60 70, 50 50 Z" />
+    </svg>
+    <svg class="butterfly-bg-delay w-72 h-72 md:w-[480px] md:h-[480px] text-emerald-100/75 drop-shadow-[0_0_20px_rgba(167,243,208,0.35)]" viewBox="0 0 100 100" fill="currentColor">
+      <path d="M50 45 C35 10, 5 20, 15 50 C22 70, 42 60, 50 52 C58 60, 78 70, 85 50 C95 20, 65 10, 50 45 Z M50 50 C40 70, 20 85, 30 95 C40 100, 48 78, 50 68 C52 78, 60 100, 70 95 C80 85, 60 70, 50 50 Z" />
+    </svg>
+  </div>
+
+  <!-- Main Executable Window -->
+  <div class="retro-window w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col min-h-[660px] relative z-10 transition-all duration-500 my-auto">
+
+    <!-- Window Header / Title Bar -->
+    <div class="bg-stone-900/90 border-b border-stone-800/80 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="w-3.5 h-3.5 rounded-full bg-rose-500/80 inline-block shadow-sm"></span>
+        <span class="w-3.5 h-3.5 rounded-full bg-amber-500/80 inline-block shadow-sm"></span>
+        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/80 inline-block shadow-sm"></span>
+        <span class="text-xs font-mono text-stone-400 ml-2 font-semibold tracking-wider">C:\SYSTEM\nengi.exe</span>
+      </div>
+      <div class="flex items-center space-x-2 text-xs font-mono text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-800/50">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>v2026.10</span>
+      </div>
+    </div>
+
+    <!-- MAIN VIEW: CAKE SCREEN -->
+    <div id="cakeView" class="flex-1 flex flex-col items-center justify-between p-6 md:p-8 relative overflow-hidden transition-opacity duration-300">
+      
+      <!-- Ambient Header & Aesthetic Quote Overlay -->
+      <div class="text-center space-y-3 z-10 max-w-lg">
+        <h1 class="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 via-amber-100 to-green-200 tracking-tight">
+          Happy Birthday Nengi! 🎉
+        </h1>
+        
+        <!-- Image Quote Typography Banner -->
+        <div class="py-2 px-4 rounded-xl bg-black/20 border border-emerald-500/15 backdrop-blur-sm">
+          <p class="font-serif-quote text-[11px] md:text-xs tracking-widest text-emerald-100/90 leading-relaxed uppercase">
+            DON'T LET THIS DARKNESS FOOL YOU.<br/>
+            ALL LIGHTS TURNED OFF CAN BE TURNED ON.
+          </p>
+        </div>
+      </div>
+
+      <!-- CENTERPIECE: BIRTHDAY CAKE WITH CANDLES -->
+      <div class="relative my-6 flex flex-col items-center justify-center z-10 scale-90 md:scale-100 transition-transform">
+        
+        <!-- Candles Container -->
+        <div class="flex space-x-8 mb-[-8px] z-20">
+          
+          <!-- Candle 1 -->
+          <div class="relative flex flex-col items-center">
+            <div id="flame1" class="flame w-4 h-6 mb-1"></div>
+            <div id="smoke1" class="hidden absolute -top-4"></div>
+            <div class="w-1 h-3 bg-amber-200"></div>
+            <div class="w-3.5 h-10 bg-gradient-to-b from-emerald-400 to-green-600 rounded-t-sm shadow-md border-t border-emerald-300"></div>
+          </div>
+
+          <!-- Candle 2 (Center) -->
+          <div class="relative flex flex-col items-center -mt-2">
+            <div id="flame2" class="flame w-4 h-6 mb-1"></div>
+            <div id="smoke2" class="hidden absolute -top-4"></div>
+            <div class="w-1 h-3 bg-amber-200"></div>
+            <div class="w-3.5 h-12 bg-gradient-to-b from-amber-300 to-yellow-600 rounded-t-sm shadow-md border-t border-amber-200"></div>
+          </div>
+
+          <!-- Candle 3 -->
+          <div class="relative flex flex-col items-center">
+            <div id="flame3" class="flame w-4 h-6 mb-1"></div>
+            <div id="smoke3" class="hidden absolute -top-4"></div>
+            <div class="w-1 h-3 bg-amber-200"></div>
+            <div class="w-3.5 h-10 bg-gradient-to-b from-teal-400 to-emerald-600 rounded-t-sm shadow-md border-t border-teal-300"></div>
+          </div>
+
+        </div>
+
+        <!-- Cake Body -->
+        <div class="relative flex flex-col items-center">
+          
+          <!-- Top Frosting & Layer 1 -->
+          <div class="w-48 h-16 bg-gradient-to-r from-emerald-100 via-amber-50 to-emerald-100 rounded-t-2xl shadow-lg relative overflow-hidden border-t-2 border-white/50">
+            <!-- Decorative Drips -->
+            <div class="absolute top-0 left-0 right-0 flex justify-around">
+              <div class="w-6 h-5 bg-stone-100 rounded-b-full"></div>
+              <div class="w-8 h-7 bg-stone-100 rounded-b-full -mt-1"></div>
+              <div class="w-7 h-6 bg-stone-100 rounded-b-full"></div>
+              <div class="w-6 h-4 bg-stone-100 rounded-b-full"></div>
+            </div>
+            <!-- Sprinkles -->
+            <div class="absolute inset-0 top-6 flex justify-around items-center px-4">
+              <span class="w-2 h-1 bg-yellow-500 rounded-full rotate-45"></span>
+              <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+              <span class="w-2 h-1 bg-amber-500 rounded-full -rotate-12"></span>
+              <span class="w-2 h-1 bg-green-500 rounded-full rotate-12"></span>
+              <span class="w-1.5 h-1.5 bg-lime-600 rounded-full"></span>
+            </div>
+          </div>
+
+          <!-- Cream Filling Layer -->
+          <div class="w-52 h-3 bg-amber-100 border-y border-amber-200/50"></div>
+
+          <!-- Cake Layer 2 (Bottom) -->
+          <div class="w-56 h-20 bg-gradient-to-r from-stone-900 via-emerald-950 to-stone-900 rounded-b-xl shadow-xl relative overflow-hidden flex flex-col items-center justify-center border-b-2 border-emerald-500/30">
+            <!-- Decorative Frosting Lines -->
+            <div class="w-full flex justify-around opacity-40">
+              <div class="w-4 h-4 border-b-2 border-emerald-200 rounded-full"></div>
+              <div class="w-4 h-4 border-b-2 border-emerald-200 rounded-full"></div>
+              <div class="w-4 h-4 border-b-2 border-emerald-200 rounded-full"></div>
+              <div class="w-4 h-4 border-b-2 border-emerald-200 rounded-full"></div>
+              <div class="w-4 h-4 border-b-2 border-emerald-200 rounded-full"></div>
+            </div>
+          </div>
+
+          <!-- Cake Plate -->
+          <div class="w-68 h-4 bg-gradient-to-r from-stone-400 via-stone-200 to-stone-400 rounded-full shadow-2xl mt-1 border-t border-white"></div>
+          <div class="w-76 h-2 bg-black/60 rounded-full blur-md mt-1"></div>
+        </div>
+
+      </div>
+
+      <!-- INTERACTIVE BUTTONS -->
+      <div class="w-full max-w-md space-y-3 z-10">
+        
+        <!-- Button 1: Blow Out Candles -->
+        <button id="blowBtn" onclick="blowOutCandles()" class="glow-button w-full py-3.5 px-5 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-500 hover:to-green-600 text-white font-semibold rounded-xl flex items-center justify-center space-x-3 transition-all border border-emerald-400/30">
+          <i data-lucide="wind" class="w-5 h-5"></i>
+          <span id="blowBtnText">Blow Out Candles</span>
+        </button>
+
+        <!-- Button 2: Play Birthday Theme Song -->
+        <button id="musicBtn" onclick="toggleMusic()" class="glow-button w-full py-3.5 px-5 bg-gradient-to-r from-stone-700 to-emerald-900 hover:from-stone-600 hover:to-emerald-800 text-emerald-100 font-semibold rounded-xl flex items-center justify-center space-x-3 transition-all border border-emerald-500/30">
+          <i id="musicIcon" data-lucide="music" class="w-5 h-5 text-emerald-300"></i>
+          <span id="musicBtnText">play birthday theme song</span>
+        </button>
+
+        <!-- Button 3: Read Letter -->
+        <button onclick="openLetter()" class="w-full py-3.5 px-5 bg-stone-900/80 hover:bg-stone-800/80 text-emerald-200 border border-emerald-500/30 hover:border-emerald-400/60 font-semibold rounded-xl flex items-center justify-center space-x-3 transition-all">
+          <i data-lucide="mail" class="w-5 h-5 text-emerald-400"></i>
+          <span>Read Birthday Letter</span>
+        </button>
+
+      </div>
+
+      <!-- Music Bar Status -->
+      <div id="musicStatus" class="opacity-0 transition-opacity duration-300 mt-2 text-xs font-mono text-emerald-300 flex items-center space-x-2">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span>Now Playing: "Water" by Brenn!</span>
+      </div>
+
+    </div>
+
+
+    <!-- PAGE 2: BIRTHDAY LETTER VIEW -->
+    <div id="letterView" class="hidden flex-1 flex flex-col p-6 md:p-8 relative overflow-y-auto transition-opacity duration-300">
+      
+      <!-- Top Navigation -->
+      <div class="flex items-center justify-between mb-4">
+        <button onclick="closeLetter()" class="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 text-sm font-semibold rounded-lg border border-stone-700 flex items-center space-x-2 transition">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Back to Cake</span>
+        </button>
+        <span class="text-xs font-mono text-stone-400">letter_for_nengi.txt</span>
+      </div>
+
+      <!-- Letter Document Container -->
+      <div class="letter-paper flex-1 rounded-2xl p-6 md:p-8 flex flex-col justify-between space-y-6 relative overflow-hidden">
+        
+        <!-- Ribbon / Stamp Decoration -->
+        <div class="absolute top-4 right-4 w-12 h-12 bg-emerald-900/10 rounded-full flex items-center justify-center border border-emerald-700/30">
+          <i data-lucide="heart" class="w-6 h-6 text-emerald-800"></i>
+        </div>
+
+        <!-- Header -->
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold font-handwriting text-emerald-900 mb-1">Dearest Nengi,</h2>
+        </div>
+
+        <!-- Body Content -->
+        <div class="space-y-4 text-stone-800 leading-relaxed text-sm md:text-base font-sans max-h-[380px] overflow-y-auto pr-1">
+          <p>
+            Smile. Lemme take a picture. Happy Birthday to the most wonderful cousin. Thank you so much for always being there and having a listening ear. I remember when I told you in IFY that I shine for others; You have given me the most reason to smile and be happy; to actually look for joy in life and be strong. I’ll be forever grateful and be in your debt. I owe you more than 5quid and id give more than a knee for you ( I made the joke when we were on call with timi ). The pride i have in you cannot be measured neither can the joy i have when you come round. Thank you for always being there, for always supporting and giving me hope when i seem to drown in despair. You are a joy to the people around you and the ones lucky enough to call you a friend. Over the course of time, I’ve learnt people come and go but I hope and pray to God u remain in my life. I love the glint in your eye anytime u play guitar or talk about anything you are very passionate with. I will always be there to support you and hold you when u are weary. The beauty u are and give to the world genuinely can’t be matched. Never doubt that or question the value you have. Trust me to always put you in your place because no matter where you think you should be, I’ll always think you deserve to be higher than that. You are my twin, my cousin but most important of all you are Tamunonengiofori Ogbulu-Hart Nathania and that’s why I love you.
+          </p>
+        </div>
+
+        <!-- Sign-off -->
+        <div class="pt-4 border-t border-stone-200 flex flex-col items-end">
+          <p class="text-2xl font-handwriting text-emerald-900 font-bold mt-1">Love, best cousin</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- System Footer -->
+    <div class="bg-stone-900/80 border-t border-stone-800 px-4 py-2 text-center text-[11px] font-mono text-stone-400 flex justify-between items-center">
+      <span>STATUS: ACTIVE</span>
+      <span>nengi.exe</span>
+    </div>
+
+  </div>
+
+  <!-- Audio Element for Brenn! - Water -->
+  <audio id="bgAudio" loop preload="auto">
+    <source src="https://ia801503.us.archive.org/15/items/water-brenn/water-brenn.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=acoustic-guitars-ambient-112169.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // State Variables
+    let candlesLit = true;
+    let isPlaying = false;
+    const audio = document.getElementById('bgAudio');
+
+    // Blow Out Candles Function
+    function blowOutCandles() {
+      const blowBtnText = document.getElementById('blowBtnText');
+      const flames = [document.getElementById('flame1'), document.getElementById('flame2'), document.getElementById('flame3')];
+
+      if (candlesLit) {
+        // Play blow sound effect synthesis
+        playBlowSound();
+
+        // Put out flames
+        flames.forEach((flame, index) => {
+          flame.style.display = 'none';
+          
+          // Create rising smoke
+          const smokeEl = document.getElementById(`smoke${index + 1}`);
+          smokeEl.classList.remove('hidden');
+          smokeEl.innerHTML = '<div class="smoke"></div><div class="smoke" style="animation-delay: 0.3s"></div>';
+        });
+
+        // Trigger celebration Confetti
+        triggerConfetti();
+
+        // Update button status
+        candlesLit = false;
+        blowBtnText.innerText = "Relight Candles";
+      } else {
+        // Relight candles
+        flames.forEach((flame, index) => {
+          flame.style.display = 'block';
+          const smokeEl = document.getElementById(`smoke${index + 1}`);
+          smokeEl.classList.add('hidden');
+        });
+
+        candlesLit = true;
+        blowBtnText.innerText = "Blow Out Candles";
+      }
+    }
+
+    // Sound Synthesis for Candle Blow
+    function playBlowSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = audioCtx.sampleRate * 0.5;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(400, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.5);
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        noise.start();
+      } catch (e) {
+        console.log("AudioContext blocked or unavailable");
+      }
+    }
+
+    // Toggle Music Playback
+    function toggleMusic() {
+      const musicBtnText = document.getElementById('musicBtnText');
+      const musicStatus = document.getElementById('musicStatus');
+
+      if (!isPlaying) {
+        audio.play().then(() => {
+          isPlaying = true;
+          musicBtnText.innerText = "Pause Song";
+          musicStatus.classList.remove('opacity-0');
+        }).catch(err => {
+          console.log("Audio play issue", err);
+          alert("Click again to play audio!");
+        });
+      } else {
+        audio.pause();
+        isPlaying = false;
+        musicBtnText.innerText = "play birthday theme song";
+        musicStatus.classList.add('opacity-0');
+      }
+    }
+
+    // Trigger Confetti Effect
+    function triggerConfetti() {
+      var count = 200;
+      var defaults = { origin: { y: 0.7 } };
+
+      function fire(particleRatio, opts) {
+        confetti(Object.assign({}, defaults, opts, {
+          particleCount: Math.floor(count * particleRatio)
+        }));
+      }
+
+      fire(0.25, { spread: 26, startVelocity: 55 });
+      fire(0.2, { spread: 60 });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      fire(0.1, { spread: 120, startVelocity: 45 });
+    }
+
+    // Navigation
+    function openLetter() {
+      document.getElementById('cakeView').classList.add('hidden');
+      document.getElementById('letterView').classList.remove('hidden');
+    }
+
+    function closeLetter() {
+      document.getElementById('letterView').classList.add('hidden');
+      document.getElementById('cakeView').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
